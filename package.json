@@ -1,0 +1,26 @@
+{
+  "name": "MMM-FlightRadarTracker",
+  "version": "0.0.1",
+  "description": "The 'MMM-FlightRadarTracker' module displays what is flying in the airspace above your head from data provided by flightradar24.com",
+  "main": "MMM-FlightRadarTracker.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jesmak/MMM-FlightRadarTracker.git"
+  },
+  "keywords": [
+    "magic mirror",
+    "module",
+    "flights",
+	"flightradar24"
+  ],
+  "author": "Jesse Mäkinen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jesmak/MMM-FlightRadarTracker/issues"
+  },
+  "dependencies": {
+	"flightradar24-client": "^0.3.0",
+	"geolocation-utils": "^1.2.2",
+    "csv-parse": "^4.6.5"
+  }
+}
