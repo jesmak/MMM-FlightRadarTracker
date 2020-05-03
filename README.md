@@ -3,6 +3,8 @@
 `MMM-FlightRadarTracker` is a module for [MagicMirror](https://github.com/MichMich/MagicMirror) that allows you to display
 real time information about nearby planes using data retrieved from [flightradar24](https://www.flightradar24.com). This module borrows major parts from tbouron's excellent [MMM-FlightTracker](https://github.com/tbouron/MMM-FlightTracker), but is meant for those that don't have an ADS-B receiver and want to use flightradar24 data instead.
 
+![Screenshot of the module](./screenshot_nearbyplanes.png)
+
 ### Setup
 
 Clone this module into your MagicMirror's `modules` directory and install the dependencies:
