@@ -42,10 +42,10 @@ then add the module to your MagicMirror's configuration. Here is an example:
                 showSpeed: Boolean,
                 showAltitude: Boolean,
                 showHeading: Boolean,
-		            showDirectionAsArrow: Boolean,
-		            noPlanesLabel: String,
-		            atTheWindowLabel: String,
-		            passingByLabel: String
+                showDirectionAsArrow: Boolean,
+                noPlanesLabel: String,
+                atTheWindowLabel: String,
+                passingByLabel: String
             }
         }
     ]
@@ -71,4 +71,4 @@ then add the module to your MagicMirror's configuration. Here is an example:
 | showDirectionAsArrow | Whether to show aircraft direction as an arrow. If false, use text, E.g. `NE`instead. | `true` | No |
 | noPlanesLabel | Text to show when there are no planes inside the defined area. | `No planes nearby` | No |
 | atTheWindowLabel | Subtitle to show for planes that are at the window. | `At the window` | No |
-| passingByLabel | Subtitle to show for planes that are passinb y. | `Passing by` | No |
+| passingByLabel | Subtitle to show for planes that are passing by. | `Passing by` | No |
