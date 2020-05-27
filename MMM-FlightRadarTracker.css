@@ -9,7 +9,7 @@
 
 .aircraft-heading,
 .aircraft-subheading {
-    max-width: 350px;
+    max-width: 450px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

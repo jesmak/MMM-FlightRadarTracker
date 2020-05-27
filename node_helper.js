@@ -2,6 +2,7 @@
 
 const NodeHelper = require('node_helper');
 const radar = require('flightradar24-client/lib/radar');
+const flight = require('flightradar24-client/lib/flight');
 const geoutils = require('geolocation-utils');
 const parse = require('csv-parse');
 const fs = require('fs');
@@ -11,6 +12,7 @@ module.exports = NodeHelper.create({
 
     airlines: [],
     aircrafts: [],
+    planetypes: [],
 	
     init: function() {
 
@@ -21,6 +23,10 @@ module.exports = NodeHelper.create({
         const aircraftsParser = parse({
             delimiter: ',',
             columns: ['icao', 'regid', 'mdl', 'type', 'operator']
+        });
+        const planetypesParser = parse({
+            delimiter: ',',
+            columns: ['name', 'iata', 'icao']
         });
 
         fs.createReadStream(path.join(__dirname, 'data', 'airlines.csv'))
@@ -59,6 +65,23 @@ module.exports = NodeHelper.create({
             .on('end', () => {
                 console.log('Aircrafts DB loaded');
             });
+
+        fs.createReadStream(path.join(__dirname, 'data', 'planetypes.csv'))
+            .pipe(planetypesParser)
+            .on('error', err => {
+                console.error(err);
+            })
+            .on('data', row => {
+                Object.keys(row).forEach(key => {
+                    if (row[key] === '') {
+                        row[key] = null
+                    }
+                });
+                this.planetypes.push(row);
+            })
+            .on('end', () => {
+                console.log('Plane types DB loaded');
+            });
     },
 
     socketNotificationReceived: function (notification, payload) {
@@ -69,22 +92,61 @@ module.exports = NodeHelper.create({
 			var boundingBox = geoutils.getBoundingBox([{ lat: payload.centerPoint[0], lon: payload.centerPoint[1] }], payload.distance * 1000);
 			radar(boundingBox.topLeft.lat, boundingBox.topLeft.lon, boundingBox.bottomRight.lat, boundingBox.bottomRight.lon)
 				.then(function (result) {
-					self.trackAircrafts(payload.centerPoint[0], payload.centerPoint[1], payload.limit, result);
+					result.forEach(function(f) {
+						self.getFlightDetails(payload.centerPoint[0], payload.centerPoint[1], payload.limit, result, f); 
+					});
 				})
 				.catch(console.error);
 		}
     },
 	
+	getFlightDetails: function(lat, lon, limit, data, f) {
+		
+        const self = this;
+
+		flight(f.id)
+			.then(function (result) {
+				
+				f.detailsRetrieved = true;
+				
+				if (result.origin) {
+					f.origin = result.origin.name;
+					f.originId = result.origin.id;
+					f.originCountry = result.origin.country;
+				}
+				
+				if (result.destination) {
+					f.destination = result.destination.name;
+					f.destinationId = result.destination.id;
+					f.destinationCountry = result.destination.country;
+				}
+				
+				if (data.every(f => f.detailsRetrieved)) {
+					self.trackAircrafts(lat, lon, limit, data);
+				}
+			})
+			.catch(function (error) {
+				console.error(error);
+				f.detailsRetrieved = true;
+				if (data.every(f => f.detailsRetrieved)) {
+					self.trackAircrafts(lat, lon, limit, data);
+				}
+			});
+	},
+	
     trackAircrafts: function(lat, lon, limit, data) {
         
-		console.log(lat, lon);
-		
 		let aircrafts = data
             .filter(aircraft => aircraft.callsign)
             .map(aircraft => {
 
-                const plane = aircraft.modeSCode ? this.aircrafts.find(plane => plane.icao === aircraft.modeSCode.toLowerCase()) : null;
-                const airline = this.airlines.find(airline => airline.icao === aircraft.callsign.substr(0, 3));
+                let plane = aircraft.modeSCode ? this.aircrafts.find(plane => plane.icao === aircraft.modeSCode.toLowerCase()) : null;
+				
+				if (plane == null && aircraft.model) {
+					plane = this.planetypes.find(plane => plane.icao.toLowerCase() === aircraft.model.toLowerCase());
+				}
+                
+				const airline = this.airlines.find(airline => airline.icao === aircraft.callsign.substr(0, 3));
 
                 // Find out airline name
                 if (!aircraft.hasOwnProperty('airline')) {
@@ -104,8 +166,14 @@ module.exports = NodeHelper.create({
                 }
 
                 // Find out plane type
-                if (!aircraft.hasOwnProperty('type') && plane && plane.type) {
-                    aircraft.type = plane.type;
+                if (!aircraft.hasOwnProperty('type') && plane)
+				{
+					if (plane.type) {
+						aircraft.type = plane.type;
+					}
+					else if (plane.name) {
+						aircraft.type = plane.name;
+					}
                 }
 
                 // Find out plane distance and direction from base coordinates

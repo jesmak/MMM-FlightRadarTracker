@@ -14,6 +14,7 @@ Module.register('MMM-FlightRadarTracker',{
     	showHeading: true,
     	showType: true,
     	showAirline: true,
+		showRoute: true,
         passingByThreshold: -1,
     	showDirectionAsArrow: true,
     	noPlanesLabel: "No planes nearby",
@@ -53,7 +54,6 @@ Module.register('MMM-FlightRadarTracker',{
     },
 	
 	getDom: function() {
-        console.log(this.config);
 		
 		const wrapper = document.createElement('div');
         wrapper.className = 'flight-tracker';
@@ -106,9 +106,14 @@ Module.register('MMM-FlightRadarTracker',{
             if (this.config.showType && aircraft.type) {
                 subHeading.push(`<span>${aircraft.type}</span>`);
             }
-            if (altitude < this.config.passingByThreshold && aircraft.distance) {
+            if (this.config.passingByThreshold < 0 || (altitude < this.config.passingByThreshold && aircraft.distance)) {
                 const distance = aircraft.distance * (this.config.altitudeUnits === 'metric' ? 1 : 3.28084);
-                subHeading.push(`<span><i class="fas fa-location-arrow dimmed"></i>${Math.floor(distance)}<sup>${this.config.altitudeUnits === 'metric' ? 'm' : 'ft'}</sup></span>`);
+				if (this.config.altitudeUnits === 'metric' && distance >= 10000) {
+					subHeading.push(`<span><i class="fas fa-location-arrow dimmed"></i>${Math.floor(distance / 1000)}<sup>km</sup></span>`);
+				}
+				else {
+					subHeading.push(`<span><i class="fas fa-location-arrow dimmed"></i>${Math.floor(distance)}<sup>${this.config.altitudeUnits === 'metric' ? 'm' : 'ft'}</sup></span>`);
+				}
                 if (aircraft.bearing) {
 					if (this.config.showDirectionAsArrow) {
                         subHeading.push(`<i class="fa fa-long-arrow-up" style="transform:rotate(${aircraft.bearing}deg); margin-left: 0.5em;"></i>`);
@@ -120,9 +125,23 @@ Module.register('MMM-FlightRadarTracker',{
             }
             if (subHeading.length > 0) {
                 const aircraftSubHeading = document.createElement('div');
-                aircraftSubHeading.className = 'aircraft-subheading xsmall dimmed';
+                aircraftSubHeading.className = 'aircraft-subheading xsmall';
                 aircraftSubHeading.innerHTML = subHeading.join('');
                 row.appendChild(aircraftSubHeading);
+            }
+
+            if (this.config.showRoute && aircraft.origin) {
+                const originSubHeading = document.createElement('div');
+                originSubHeading.className = 'aircraft-subheading xsmall';
+                originSubHeading.innerHTML = `<span><i class="fas fa-plane-departure dimmed" style="margin-right: 0.5em;"></i>${aircraft.origin}</span><span class="dimmed">(${aircraft.originId})</span><span><i class="fas fa-plane-arrival dimmed" style="margin-right: 0.5em;"></i>${aircraft.destination}</span><span class="dimmed">(${aircraft.destinationId})</span>`;
+                row.appendChild(originSubHeading);
+            }
+
+            if (false && this.config.showRoute && aircraft.destination) {
+                const destinationSubHeading = document.createElement('div');
+                destinationSubHeading.className = 'aircraft-subheading xsmall';
+                destinationSubHeading.innerHTML = `<span><i class="fas fa-plane-arrival dimmed" style="margin-right: 0.5em;"></i>${aircraft.destination}</span><span class="dimmed">(${aircraft.destinationId})</span>`;
+                row.appendChild(destinationSubHeading);
             }
 
             const metadata = [];
