@@ -49,8 +49,8 @@ then add the module to your MagicMirror's configuration. Here is an example:
                 noPlanesLabel: String,
                 atTheWindowLabel: String,
                 passingByLabel: String,
-				sort: 'distance|speed|altitude|flight|airline',
-				sortDescending: Boolean
+		sort: 'distance|speed|altitude|flight|airline',
+		sortDescending: Boolean
             }
         }
     ]
