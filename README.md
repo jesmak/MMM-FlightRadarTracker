@@ -48,7 +48,9 @@ then add the module to your MagicMirror's configuration. Here is an example:
                 showRoute: Boolean,
                 noPlanesLabel: String,
                 atTheWindowLabel: String,
-                passingByLabel: String
+                passingByLabel: String,
+				sort: 'distance|speed|altitude|flight|airline',
+				sortDescending: Boolean
             }
         }
     ]
@@ -76,3 +78,5 @@ then add the module to your MagicMirror's configuration. Here is an example:
 | noPlanesLabel | Text to show when there are no planes inside the defined area. | `No planes nearby` | No |
 | atTheWindowLabel | Subtitle to show for planes that are at the window. | `At the window` | No |
 | passingByLabel | Subtitle to show for planes that are passing by. | `Passing by` | No |
+| sort | The field used for sorting the list. | `distance` | No |
+| sortDescending | Whether to sort the items in descending order. | `false` | No |

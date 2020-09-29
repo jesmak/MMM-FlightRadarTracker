@@ -19,7 +19,9 @@ Module.register('MMM-FlightRadarTracker',{
     	showDirectionAsArrow: true,
     	noPlanesLabel: "No planes nearby",
     	atTheWindowLabel: "At the window",
-    	passingByLabel: "Passing by"
+    	passingByLabel: "Passing by",
+		sort: "distance",
+		sortDescending: false
     },
 
     aircrafts: [],

@@ -93,14 +93,14 @@ module.exports = NodeHelper.create({
 			radar(boundingBox.topLeft.lat, boundingBox.topLeft.lon, boundingBox.bottomRight.lat, boundingBox.bottomRight.lon)
 				.then(function (result) {
 					result.forEach(function(f) {
-						self.getFlightDetails(payload.centerPoint[0], payload.centerPoint[1], payload.limit, result, f); 
+						self.getFlightDetails(payload.centerPoint[0], payload.centerPoint[1], payload.limit, payload.sort, payload.sortDescending, result, f); 
 					});
 				})
 				.catch(console.error);
 		}
     },
 	
-	getFlightDetails: function(lat, lon, limit, data, f) {
+	getFlightDetails: function(lat, lon, limit, sort, sortDesc, data, f) {
 		
         const self = this;
 
@@ -122,19 +122,19 @@ module.exports = NodeHelper.create({
 				}
 				
 				if (data.every(f => f.detailsRetrieved)) {
-					self.trackAircrafts(lat, lon, limit, data);
+					self.trackAircrafts(lat, lon, limit, sort, sortDesc, data);
 				}
 			})
 			.catch(function (error) {
 				console.error(error);
 				f.detailsRetrieved = true;
 				if (data.every(f => f.detailsRetrieved)) {
-					self.trackAircrafts(lat, lon, limit, data);
+					self.trackAircrafts(lat, lon, limit, sort, sortDesc, data);
 				}
 			});
 	},
 	
-    trackAircrafts: function(lat, lon, limit, data) {
+    trackAircrafts: function(lat, lon, limit, sort, sortDesc, data) {
         
 		let aircrafts = data
             .filter(aircraft => aircraft.callsign)
@@ -199,6 +199,22 @@ module.exports = NodeHelper.create({
 
                 return aircraft;
             });
+
+		if (sort == 'distance') {
+			aircrafts.sort((a,b) => ((a.distance || 0) - (b.distance || 0)) * (sortDesc ? -1 : 1)); 
+		}
+		else if (sort == 'altitude') {
+			aircrafts.sort((a,b) => ((a.altitude || 0) - (b.altitude || 0)) * (sortDesc ? -1 : 1)); 
+		}
+		else if (sort == 'speed') {
+			aircrafts.sort((a,b) => ((a.speed || 0) - (b.speed || 0)) * (sortDesc ? -1 : 1)); 
+		}
+		else if (sort == 'flight') {
+			aircrafts.sort((a,b) => ((a.flight || '').localeCompare(b.flight || '')) * (sortDesc ? -1 : 1)); 
+		}
+		else if (sort == 'airline') {
+			aircrafts.sort((a,b) => ((a.flight || '').localeCompare(b.airline || '')) * (sortDesc ? -1 : 1)); 
+		}
 
         if (aircrafts.length > limit) {
             aircrafts = aircrafts.slice(0, limit);
