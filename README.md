@@ -1,3 +1,5 @@
+NOTE: I am no longer using Magic Mirror, which means that this repository is basically abandoned. If anyone wants to adopt this project, feel free to do so, but I will not be answering to pull requests or bug reports anymore. Consider this project as dead in the water.
+
 # MMM-FlightRadarTracker
 
 `MMM-FlightRadarTracker` is a module for [MagicMirror](https://github.com/MichMich/MagicMirror) that allows you to display
