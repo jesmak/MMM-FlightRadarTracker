@@ -9,12 +9,13 @@ Module.register('MMM-FlightRadarTracker',{
     	updateInterval: 180,
         altitudeUnits: config.units,
         speedUnits: config.units,
+	distanceUnits: config.units,
     	showSpeed: true,
     	showAltitude: true,
     	showHeading: true,
     	showType: true,
     	showAirline: true,
-		showRoute: true,
+	showRoute: true,
         passingByThreshold: -1,
     	showDirectionAsArrow: true,
     	noPlanesLabel: "No planes nearby",
@@ -109,8 +110,8 @@ Module.register('MMM-FlightRadarTracker',{
                 subHeading.push(`<span>${aircraft.type}</span>`);
             }
             if (this.config.passingByThreshold < 0 || (altitude < this.config.passingByThreshold && aircraft.distance)) {
-                const distance = aircraft.distance * (this.config.altitudeUnits === 'metric' ? 1 : 3.28084);
-				if (this.config.altitudeUnits === 'metric' && distance >= 10000) {
+                const distance = aircraft.distance * (this.config.distanceUnits === 'metric' ? 1 : 3.28084);
+				if (this.config.distanceUnits === 'metric' && distance >= 10000) {
 					subHeading.push(`<span><i class="fas fa-location-arrow dimmed"></i>${Math.floor(distance / 1000)}<sup>km</sup></span>`);
 				}
 				else {
